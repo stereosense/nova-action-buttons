@@ -3,7 +3,7 @@ import each from 'lodash/each'
 import isNil from 'lodash/isNil'
 
 import {ref} from "vue";
-import {Errors} from 'form-backend-validation'
+import { Errors } from 'laravel-nova'
 
 export const useHandleAction = ({queryString, resourceId, resourceName, selectedAction, selectedResources, isOnDetail = false}) => {
 
@@ -152,6 +152,7 @@ export const useHandleAction = ({queryString, resourceId, resourceName, selected
      */
     const _handleActionResponse = ({data, headers}) => {
 
+        console.log(data, headers, "handling action response")
         let contentDisposition = headers['content-disposition']
 
         if (data instanceof Blob && isNil(contentDisposition) && data.type === 'application/json') {
@@ -204,13 +205,14 @@ export const useHandleAction = ({queryString, resourceId, resourceName, selected
             })
 
         } else if (data.redirect) {
-            window.location = data.redirect
+            if (data.redirect.openInNewTab){
+                _emitResponseCallback(() => window.open(data.redirect.url, '_blank'))
+            } else {
+                window.location = data.redirect.url
 
+            }
         } else if (data.visit) {
             Nova.visit({url: Nova.url(data.visit.path, data.visit.options), remote: false})
-
-        } else if (data.openInNewTab) {
-            _emitResponseCallback(() => window.open(data.openInNewTab, '_blank'))
 
         } else {
             _emitResponseCallback(() => Nova.success(data.message || __('The action was executed successfully.')))

@@ -11,7 +11,7 @@ view.
 ## Requirements
 
 - `php: >=8.0`
-- `laravel/nova: ^4.1`
+- `laravel/nova: ^5.0`
 
 ## Installation
 
